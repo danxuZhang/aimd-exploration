@@ -3,6 +3,38 @@ from helpers import *
 MAX_BANDWIDTH = 100000  # Maximum bandwidth is 100Gbps
 
 
+def test():
+    a = 1
+    b = 0.5
+    tcp_reno1 = TCPReno(
+        a,
+        b,
+        initial_cwnd=25,
+        max_cwnd=100,
+        bandwidth=5000,
+        rtt=0.001,
+        max_bandwidth=MAX_BANDWIDTH,
+        name="TCP Reno 1",
+    )
+    tcp_reno2 = TCPReno(
+        a,
+        b,
+        initial_cwnd=75,
+        max_cwnd=100,
+        bandwidth=5000,
+        rtt=0.001,
+        max_bandwidth=MAX_BANDWIDTH,
+        name="TCP Reno 2",
+    )
+
+    simulate_shared_environment(tcp_reno1, tcp_reno2, max_iters=100)
+
+    plot_reno(tcp_reno1, tcp_reno2)
+    plot_comparison_metrics(tcp_reno1, tcp_reno2)
+    tcp_reno1.print_metrics()
+    tcp_reno2.print_metrics()
+
+
 def static_beta_assignment_test():
     ab_values = [[1, 0.5], [1, 0.6], [1, 0.7], [1, 0.8], [1, 0.9]]
     latencies = []
@@ -155,4 +187,6 @@ def static_alpha_assignment_test():
     plt.show()
 
 
-static_alpha_assignment_test()
+# static_alpha_assignment_test()
+# static_beta_assignment_test()
+test()

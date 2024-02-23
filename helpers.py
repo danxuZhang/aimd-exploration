@@ -36,10 +36,14 @@ class TCPReno:
     def additive_increase(self):
         self.cwnd = min(self.cwnd + self.alpha, self.max_cwnd)
         self.alpha = self.alpha_increase_fn(self.alpha)
+        self.alpha = min(8, self.alpha + 1)
+        self.beta = min(0.9, self.beta + 0.1)
 
     def multiplicative_decrease(self):
         self.cwnd = max(int(self.cwnd * self.beta), 1)
         self.beta = self.beta_decrease_fn(self.beta)
+        self.alpha = max(1, self.alpha - 1)
+        self.beta = max(0.5, self.beta - 0.1)
 
     def update_latency(self):
         packet_size = 1  # in KB
