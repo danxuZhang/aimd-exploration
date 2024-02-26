@@ -4,12 +4,12 @@ MAX_BANDWIDTH = 100000  # Maximum bandwidth is 100Gbps
 
 
 def test():
-    a = 1
-    b = 0.5
+    a = 3
+    b = 0.7
     tcp_reno1 = TCPReno(
         a,
         b,
-        initial_cwnd=25,
+        initial_cwnd=20,
         max_cwnd=100,
         bandwidth=5000,
         rtt=0.001,
@@ -19,7 +19,7 @@ def test():
     tcp_reno2 = TCPReno(
         a,
         b,
-        initial_cwnd=75,
+        initial_cwnd=80,
         max_cwnd=100,
         bandwidth=5000,
         rtt=0.001,
@@ -27,16 +27,18 @@ def test():
         name="TCP Reno 2",
     )
 
-    simulate_shared_environment(tcp_reno1, tcp_reno2, max_iters=100)
+    simulate_shared_environment(tcp_reno1, tcp_reno2, max_iters=500)
 
     plot_reno(tcp_reno1, tcp_reno2)
     plot_comparison_metrics(tcp_reno1, tcp_reno2)
+    tcp_reno1.plot_cwnd()
+    tcp_reno2.plot_cwnd()
     tcp_reno1.print_metrics()
     tcp_reno2.print_metrics()
 
 
 def static_beta_assignment_test():
-    ab_values = [[1, 0.5], [1, 0.6], [1, 0.7], [1, 0.8], [1, 0.9]]
+    ab_values = [[1, 0.3], [1, 0.4], [1, 0.5], [1, 0.6], [1, 0.7], [1, 0.8], [1, 0.9]]
     latencies = []
     latencies_std = []
     throughputs = []
@@ -45,7 +47,7 @@ def static_beta_assignment_test():
         tcp_reno1 = TCPReno(
             a,
             b,
-            initial_cwnd=25,
+            initial_cwnd=20,
             max_cwnd=100,
             bandwidth=5000,
             rtt=0.001,
@@ -55,7 +57,7 @@ def static_beta_assignment_test():
         tcp_reno2 = TCPReno(
             a,
             b,
-            initial_cwnd=75,
+            initial_cwnd=80,
             max_cwnd=100,
             bandwidth=5000,
             rtt=0.001,
@@ -95,7 +97,7 @@ def static_beta_assignment_test():
     print("Throughputs:", throughputs)
     print("Throughputs Std:", throughputs_std)
 
-    x = [0.5, 0.6, 0.7, 0.8, 0.9]
+    x = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     # plt.figure(figsize=(12, 6))
     fig, axes = plt.subplots(1, 2)
     axes[0].set_title("TCP Reno Latency Over Beta")
@@ -112,7 +114,16 @@ def static_beta_assignment_test():
 
 
 def static_alpha_assignment_test():
-    ab_values = [[1, 0.8], [2, 0.8], [3, 0.8], [4, 0.8], [5, 0.8], [6, 0.8]]
+    ab_values = [
+        [1, 0.8],
+        [2, 0.8],
+        [3, 0.8],
+        [4, 0.8],
+        [5, 0.8],
+        [10, 0.8],
+        [15, 0.8],
+        [20, 0.8],
+    ]
     latencies = []
     latencies_std = []
     throughputs = []
@@ -171,7 +182,7 @@ def static_alpha_assignment_test():
     print("Throughputs:", throughputs)
     print("Throughputs Std:", throughputs_std)
 
-    x = [1, 2, 3, 4, 5, 6]
+    x = [1, 2, 3, 4, 5, 10, 15, 20]
     # plt.figure(figsize=(12, 6))
     fig, axes = plt.subplots(1, 2)
     axes[0].set_title("TCP Reno Latency Over Alpha")

@@ -19,6 +19,7 @@ class TCPReno:
         self.name = name
         self.alpha = alpha
         self.beta = beta
+        self.init_alpha = alpha
         self.cwnd = initial_cwnd
         self.max_cwnd = max_cwnd
         self.rtt = rtt
@@ -32,18 +33,23 @@ class TCPReno:
 
         self.alpha_increase_fn = alpha_update_fn
         self.beta_decrease_fn = beta_update_fn
+        self.clk = 0
 
     def additive_increase(self):
         self.cwnd = min(self.cwnd + self.alpha, self.max_cwnd)
         self.alpha = self.alpha_increase_fn(self.alpha)
-        self.alpha = min(8, self.alpha + 1)
-        self.beta = min(0.9, self.beta + 0.1)
+        self.alpha = self.alpha + 1  # LIPD
+        # self.alpha = self.alpha * 2  # EIPD
+        # self.alpha = self.alpha * 2 if self.clk % 2 == 0 else self.alpha  # P-EIPD
+        # self.alpha = self.alpha + 1 / self.cwnd
+        # self.alpha = self.alpha + 1 / np.log(self.cwnd + 1)
+        self.clk += 1
 
     def multiplicative_decrease(self):
         self.cwnd = max(int(self.cwnd * self.beta), 1)
         self.beta = self.beta_decrease_fn(self.beta)
-        self.alpha = max(1, self.alpha - 1)
-        self.beta = max(0.5, self.beta - 0.1)
+        self.alpha = max(1, self.alpha / 2)
+        self.clk = 0
 
     def update_latency(self):
         packet_size = 1  # in KB
@@ -113,6 +119,15 @@ class TCPReno:
         plt.legend()
 
         plt.tight_layout()
+        plt.show()
+
+    def plot_cwnd(self):
+        plt.ylim(0, self.max_cwnd)
+        plt.xlabel("Iteration")
+        plt.ylabel("cwnd")
+        plt.title("TCP Reno cwnd Over Time for " + self.name)
+        plt.plot(self.cwnd_vals, "o-", label="cwnd")
+        plt.legend()
         plt.show()
 
 
